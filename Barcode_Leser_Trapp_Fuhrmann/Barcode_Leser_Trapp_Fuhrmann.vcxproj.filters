@@ -43,6 +43,9 @@
     <ClInclude Include="Resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Barcode_Decoder.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Barcode_Leser_Trapp_Fuhrmann.cpp">
@@ -52,6 +55,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Barcode_Decoder.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

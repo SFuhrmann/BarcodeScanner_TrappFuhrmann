@@ -4,7 +4,7 @@
 
 #pragma once
 #include "afxwin.h"
-#include "PictureBox.h"
+#include "Barcode_Decoder.h"
 
 
 // CBarcode_Leser_Trapp_FuhrmannDlg-Dialogfeld
@@ -24,6 +24,7 @@ public:
 // Implementierung
 protected:
 	HICON m_hIcon;
+	Barcode_Decoder barcode_decoder;
 
 	// Generierte Funktionen für die Meldungstabellen
 	virtual BOOL OnInitDialog();
