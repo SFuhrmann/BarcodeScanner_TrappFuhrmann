@@ -221,7 +221,7 @@ bool Barcode_Decoder::isValidBarcode(vector<int>& block)
 vector<int> Barcode_Decoder::getBarcode(const Mat& img, cv::Point& startDraw, cv::Point& endDraw)
 {
 	cv::Point pos(0,0);
-	for(pos.y = 161; pos.y < img.rows; pos.y++)
+	for(pos.y = 0; pos.y < img.rows; pos.y++)
 	{		
 		for(pos.x = 0; pos.x < img.cols; pos.x++)
 		{	
