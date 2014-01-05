@@ -95,11 +95,10 @@ void CBarcode_Leser_Trapp_FuhrmannDlg::OnBnClickedFileOpen()
 	// szFilters is a text string that includes two file name filters:
 	TCHAR szFilters[]= _T("Picture Files|*.png; *.bmp; *.jpg; *.tif; *.gif; *.jpeg|All Files (*.*)|*.*||");
 
-	// Create an Open dialog; the default file name extension is ".my".
+	// Create an Open dialog
 	CFileDialog fOpenDlg(true, 0, 0, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, szFilters, this);
 
-	// Display the file dialog. When user clicks OK, fileDlg.DoModal() 
-	// returns IDOK.
+	// Display the file dialog. When user clicks OK, fileDlg.DoModal() returns IDOK.
 	if(fOpenDlg.DoModal() == IDOK)
 	{
 		CString pathName = fOpenDlg.GetPathName();
@@ -119,9 +118,6 @@ void CBarcode_Leser_Trapp_FuhrmannDlg::OnBnClickedFileOpen()
 		mDC.SetStretchBltMode(HALFTONE);
 		img.StretchBlt(mDC.m_hDC, 0, 0, 400, 300, 0, 0, img.GetWidth(), img.GetHeight(), SRCCOPY);
 		mDC.SelectObject(pob);
-
-		//open HBITMAP
-		//HBITMAP bitmap = (HBITMAP)::LoadImage(NULL, pathName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
 		m_picture.SetBitmap((HBITMAP)bmp.Detach());
 		ReleaseDC(screenDC);
