@@ -11,6 +11,7 @@ using namespace std;
 
 #define SPACE 255
 #define BAR 0
+#define BARCODESIZE 12
 
 Barcode_Decoder::Barcode_Decoder(void){};
 
@@ -71,7 +72,7 @@ int Barcode_Decoder::read_digit(const Mat& img, cv::Point& pos, int direction, i
   
 		int number = round((float)pattern[i] / unit_width); // image data / barcode is often distorted, so a rounding for approximation is needed  
 		result << number * direction;	// flip digit accoring to reading direction => left block = number * 1; right block = number * -1;
- }
+  }
 
   string str = result.str(); 
   return digitsMap[str];
@@ -177,34 +178,40 @@ vector<int> Barcode_Decoder::readBlock(const Mat& img, cv::Point& pos, int direc
 	return digits;
 }
 
-// checks if block is valid
-// receives a vector<int> from readBlock()
-// returns true when block is valid
-// returns false when block is invalid
-// An invalid block could be an empty vector or a vector consisting of to many zeroes.
-bool Barcode_Decoder::isValidBlock(vector<int>& block) 
+// Calculates check digit
+// https://en.wikipedia.org/wiki/Check_digit#UPC
+// returns true when barcode is valid
+// returns false when barcode is invalid
+bool Barcode_Decoder::isValidBarcode(vector<int>& block)
 {
-	int zeroCounter = 0;
-	int blockSize = block.size();
+	int sum = 0;
 
-
-	if(blockSize < 6) 
+	if(block.size() == BARCODESIZE) 
 	{
-		return false;
-	}
-
-	for(int i = 0; i < blockSize; i++){
-		if(block[i] == 0)
+		for(int i = 0; i < block.size(); i += 2) // add every odd index of the barcode array
 		{
-			zeroCounter++;
+			sum += block[i];		
+		}
+		if(sum == 0)
+		{
+			return false;
+		}
+
+		sum *= 3; // multiply the result by three
+		int firstBlockSum = sum;
+
+		for(int i = 1; i < block.size() -1; i += 2) // add every even index.
+		{
+			sum += block[i];		
+		}
+
+		if(sum != firstBlockSum && 10 - (sum % 10) == block[block.size() - 1]) // comparing last array index with check digit 
+		{
+			return true; 
 		}
 	}
-
-	if(zeroCounter >= 5){
-		return false;
-	} 
-
-	return true;
+	
+	return false;
 }
 
 
@@ -214,7 +221,7 @@ bool Barcode_Decoder::isValidBlock(vector<int>& block)
 vector<int> Barcode_Decoder::getBarcode(const Mat& img, cv::Point& startDraw, cv::Point& endDraw)
 {
 	cv::Point pos(0,0);
-	for(pos.y = 0; pos.y < img.rows; pos.y++)
+	for(pos.y = 161; pos.y < img.rows; pos.y++)
 	{		
 		for(pos.x = 0; pos.x < img.cols; pos.x++)
 		{	
@@ -225,15 +232,13 @@ vector<int> Barcode_Decoder::getBarcode(const Mat& img, cv::Point& startDraw, cv
 				{
 					startDraw = pos;
 					vector<int> digits;
-					if(isValidBlock(readBlock(img, pos, 1, unitWidth, digits))) // read left Block
-					{ 
-						if(traversMidCode(img, pos))								//travers non data block
-						{	
-							if(isValidBlock(readBlock(img, pos, -1, unitWidth, digits))) // read right Block
-							{ 	
-								endDraw = pos;
-								return digits;						// send digits back to calling function 
-							}
+					readBlock(img, pos, 1, unitWidth, digits);      // read left Block
+					if(traversMidCode(img, pos))								//travers non data block
+					{	
+						if(isValidBarcode(readBlock(img, pos, -1, unitWidth, digits))) // read right Block
+						{ 	
+							endDraw = pos;
+							return digits;						// send digits back to calling function 
 						}
 					}
 				}
@@ -260,13 +265,13 @@ CString Barcode_Decoder::getBarcodeString(CString filePath)
   
   if(barcode.size() > 0) // Display data when barcode found
   {
-	for (int i = 0; i < 12; i++){
+	for (int i = 0; i < barcode.size(); i++)
+	{
 		CString a;
 		a.Format("%d", barcode[i]);
 		result = result + a;
 	}
+	return result;
   }
-  return result;
-
-
+  return "No Barcode detected";
 }

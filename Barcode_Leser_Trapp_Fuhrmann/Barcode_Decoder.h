@@ -19,8 +19,9 @@ protected:
 	int getUnitWidth(const cv::Mat& img, cv::Point& pos);
 	bool traversMidCode(const cv::Mat& img, cv::Point& pos);
 	std::vector<int> readBlock(const cv::Mat& img, cv::Point& pos, int direction, int unit_width, std::vector<int>& digits);
-	bool isValidBlock(std::vector<int>& block);
+	bool isValidBarcode(std::vector<int>& block);
 	std::vector<int> getBarcode(const cv::Mat& img, cv::Point& startDraw, cv::Point& endDraw);
+
 	
 public:
 	void initMap();
